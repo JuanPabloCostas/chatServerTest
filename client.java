@@ -17,6 +17,19 @@ public class client {
             System.out.println("Error: " + e);
         }
     }
+
+    public void enviarMensaje() {
+        try {
+            OutputStream outputStream = socket.getOutputStream();
+            System.out.println("Enter message: ");
+            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            String msg = in.readLine();
+            byte[] message = msg.getBytes();
+            outputStream.write(message);
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+    }
     
 
     public client( String host, int port ) {
@@ -25,7 +38,7 @@ public class client {
             socket = new Socket(host, port);
             System.out.println("Just connected to " + socket.getRemoteSocketAddress());
 
-            // creaFlujos();
+            // Create input and output streams to read from and write to the server
 
             InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = socket.getOutputStream();
@@ -37,40 +50,38 @@ public class client {
             System.out.println(x);
             byte[] name = x.getBytes();
             outputStream.write(name);
-            
 
+            Thread enviar = new Thread() {
+                        public void run() {
+                            try {
+                                while (socket.isConnected()) {
+                                    enviarMensaje();
+                                }
+                            } catch (Exception e) {
+                                System.out.println("Error: " + e);
+                            }
+                        }
+                    };
 
-            while (socket.isConnected()) {
-                try {
+            enviar.start();
 
-                    
-                    System.out.println("Enter message: ");
-                    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-                    String msg = in.readLine();
-                    byte[] message = msg.getBytes();
-                    outputStream.write(message);
+            Thread recibir = new Thread() {
+                        public void run() {
+                            try {
+                                while (socket.isConnected()) {
+                                    byte[] buffer = new byte[1024];
+                                    inputStream.read(buffer);
+                                    String msg = new String(buffer);
+                                    System.out.println(msg);
+                                }
+                            } catch (Exception e) {
+                                System.out.println("Error: " + e);
+                            }
+                        }
+                    };
 
-                    // after 1 second, read messages from server
-                    Thread.sleep(1000);
-                    byte[] buffer = new byte[1024];
-                    int count = inputStream.read(buffer);
-                    String msgFromServer = new String(buffer, 0, count);
-                    System.out.println("Message from server: " + msgFromServer);
-                    
-                    // Restart loop after 1 second of inactivity
-                    
-                    
-
-                } catch (Exception e) {
-                    // TODO: handle exception
-                }
-                    
-
-
-
-
-
-            }            
+            recibir.start();
+             
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
