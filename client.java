@@ -4,19 +4,27 @@ import java.net.*;
 public class client {
 
     private Socket socket;
-    private InputStream netIn;
-    private OutputStream netOut;
 
-
-    public void creaFlujos() {
+    public void conectarServidor(String host, int port) {
         try {
-            
-            netIn = new DataInputStream(socket.getInputStream());
-            netOut = new DataOutputStream(socket.getOutputStream());
+            System.out.println("Connecting to " + host + " on port " + port);
+            socket = new Socket(host, port);
+            System.out.println("Just connected to " + socket.getRemoteSocketAddress());
+
+            OutputStream outputStream = socket.getOutputStream();
+
+            System.out.println("Enter username: ");
+
+            BufferedReader username = new BufferedReader(new InputStreamReader(System.in));
+            String x = username.readLine();
+            System.out.println(x);
+            byte[] name = x.getBytes();
+            outputStream.write(name);
+
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
-    }
+    } // end conectarServidor
 
     public void enviarMensaje() {
         try {
@@ -30,65 +38,57 @@ public class client {
             System.out.println("Error: " + e);
         }
     }
-    
 
-    public client( String host, int port ) {
+    public void recibirMensaje() {
         try {
-            System.out.println("Connecting to " + host + " on port " + port);
-            socket = new Socket(host, port);
-            System.out.println("Just connected to " + socket.getRemoteSocketAddress());
-
-            // Create input and output streams to read from and write to the server
-
             InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
+            byte[] buffer = new byte[1024];
+            inputStream.read(buffer);
+            String msg = new String(buffer);
+            System.out.println(msg.trim());
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+    }
 
-            System.out.println("Enter username: ");
-
-            BufferedReader username = new BufferedReader(new InputStreamReader(System.in));
-            String x = username.readLine();
-            System.out.println(x);
-            byte[] name = x.getBytes();
-            outputStream.write(name);
+    public client(String host, int port) {
+        try {
+            conectarServidor(host, port);
 
             Thread enviar = new Thread() {
-                        public void run() {
-                            try {
-                                while (socket.isConnected()) {
-                                    enviarMensaje();
-                                }
-                            } catch (Exception e) {
-                                System.out.println("Error: " + e);
-                            }
+                public void run() {
+                    try {
+                        while (socket.isConnected()) {
+                            enviarMensaje();
                         }
-                    };
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e);
+                    }
+                }
+            };
 
             enviar.start();
 
             Thread recibir = new Thread() {
-                        public void run() {
-                            try {
-                                while (socket.isConnected()) {
-                                    byte[] buffer = new byte[1024];
-                                    inputStream.read(buffer);
-                                    String msg = new String(buffer);
-                                    System.out.println(msg.trim());
-                                }
-                            } catch (Exception e) {
-                                System.out.println("Error: " + e);
-                            }
+                public void run() {
+                    try {
+                        while (socket.isConnected()) {
+                            recibirMensaje();
                         }
-                    };
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e);
+                    }
+                }
+            };
 
             recibir.start();
-             
+
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
-        
 
     }
-    
+
     public static void main(String[] args) {
         // Check args
         if (args.length != 2) {
@@ -96,7 +96,5 @@ public class client {
             System.exit(1);
         }
         new client(args[0], Integer.parseInt(args[1]));
-
-        
     }
 }
