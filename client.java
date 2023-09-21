@@ -72,7 +72,7 @@ public class client {
                                     byte[] buffer = new byte[1024];
                                     inputStream.read(buffer);
                                     String msg = new String(buffer);
-                                    System.out.println(msg);
+                                    System.out.println(msg.trim());
                                 }
                             } catch (Exception e) {
                                 System.out.println("Error: " + e);
