@@ -1,8 +1,11 @@
 import java.io.*;
 import java.net.*;
 
+
 public class client {
 
+
+    private ChatGUI chat;
     private Socket socket;
 
     public void conectarServidor(String host, int port) {
@@ -21,12 +24,15 @@ public class client {
             byte[] name = x.getBytes();
             outputStream.write(name);
 
+
+
+
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
     } // end conectarServidor
 
-    public void enviarMensaje() {
+    public void enviarMensaje(ChatGUI chat) {
         try {
             OutputStream outputStream = socket.getOutputStream();
             System.out.println("Enter message: ");
@@ -39,12 +45,14 @@ public class client {
         }
     }
 
-    public void recibirMensaje() {
+    public void recibirMensaje(ChatGUI chat) {
         try {
             InputStream inputStream = socket.getInputStream();
             byte[] buffer = new byte[1024];
             inputStream.read(buffer);
             String msg = new String(buffer);
+            chat.addMessage(msg.trim());
+            
             System.out.println(msg.trim());
         } catch (Exception e) {
             System.out.println("Error: " + e);
@@ -53,13 +61,20 @@ public class client {
 
     public client(String host, int port) {
         try {
+
             conectarServidor(host, port);
+
+            // Start ChatGUI.java
+            chat = new ChatGUI();
+            chat.addMessage("This is a test message.");
+
+
 
             Thread enviar = new Thread() {
                 public void run() {
                     try {
                         while (socket.isConnected()) {
-                            enviarMensaje();
+                            enviarMensaje(chat);
                         }
                     } catch (Exception e) {
                         System.out.println("Error: " + e);
@@ -73,7 +88,7 @@ public class client {
                 public void run() {
                     try {
                         while (socket.isConnected()) {
-                            recibirMensaje();
+                            recibirMensaje(chat);
                         }
                     } catch (Exception e) {
                         System.out.println("Error: " + e);
@@ -96,5 +111,6 @@ public class client {
             System.exit(1);
         }
         new client(args[0], Integer.parseInt(args[1]));
+
     }
 }
