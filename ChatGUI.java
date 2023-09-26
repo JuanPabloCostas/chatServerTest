@@ -14,9 +14,9 @@ import javax.swing.SwingUtilities;
 public class ChatGUI extends JFrame  {
 
 
-    private JTextArea messages; // Make messages an instance field
+    public JTextArea messages; // Make messages an instance field
     private JPanel input;
-    private JTextField tf;
+    public JTextField tf = new JTextField(10);;
 
 
 
@@ -67,12 +67,6 @@ public class ChatGUI extends JFrame  {
 
         // Input text
         JLabel inputLabel = new JLabel("Input: ");
-        tf = new JTextField(10);
-        tf.addActionListener(e -> {
-
-            messages.append(tf.getText() + "\n");
-            tf.setText("");
-        });
         
         input.add(inputLabel);
         input.add(tf);
@@ -93,8 +87,7 @@ public class ChatGUI extends JFrame  {
         }
     });}
 
-    public String getInput() {
-        return tf.getText();
-    }
+    // send mesagges back to the client
+    
 
 }

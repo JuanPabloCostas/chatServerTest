@@ -35,11 +35,35 @@ public class client {
     public void enviarMensaje(ChatGUI chat) {
         try {
             OutputStream outputStream = socket.getOutputStream();
-            System.out.println("Enter message: ");
-            BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            String msg = in.readLine();
-            byte[] message = msg.getBytes();
-            outputStream.write(message);
+            chat.tf.addActionListener(e -> {
+                String message = chat.tf.getText();
+                chat.messages.append(chat.tf.getText() + "\n");
+                chat.tf.setText("");
+
+                try {
+                    byte[] msg = message.getBytes();
+                    outputStream.write(msg);
+                } catch (Exception ex) {
+                    System.out.println("Error: " + ex);
+                }
+
+            });
+
+
+            
+            
+            
+            
+            // OutputStream outputStream = socket.getOutputStream();
+            // System.out.println("Enter message: ");
+            // // Get from chatGUI
+            // BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+            // String msg = in.readLine();
+            // byte[] message = msg.getBytes();
+            // outputStream.write(message);
+            
+
+
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
@@ -73,7 +97,7 @@ public class client {
             Thread enviar = new Thread() {
                 public void run() {
                     try {
-                        while (socket.isConnected()) {
+                        if (socket.isConnected()) {
                             enviarMensaje(chat);
                         }
                     } catch (Exception e) {
