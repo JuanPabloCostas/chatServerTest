@@ -37,6 +37,9 @@ public class client {
             OutputStream outputStream = socket.getOutputStream();
             chat.tf.addActionListener(e -> {
                 String message = chat.tf.getText();
+                if (message.equals("END")) {
+                    System.exit(0);
+                }
                 chat.messages.append(chat.tf.getText() + "\n");
                 chat.tf.setText("");
 
