@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.*;
 
+import javax.swing.JButton;
+
 
 public class client {
 
@@ -32,13 +34,14 @@ public class client {
         }
     } // end conectarServidor
 
-    public void enviarMensaje(ChatGUI chat) {
+    public void enviarMensaje(ChatGUI chat, Socket socket) {
         try {
             OutputStream outputStream = socket.getOutputStream();
             chat.tf.addActionListener(e -> {
                 String message = chat.tf.getText();
                 if (message.equals("END")) {
                     System.exit(0);
+                    
                 }
                 chat.messages.append(chat.tf.getText() + "\n");
                 chat.tf.setText("");
@@ -78,9 +81,18 @@ public class client {
             byte[] buffer = new byte[1024];
             inputStream.read(buffer);
             String msg = new String(buffer);
-            chat.addMessage(msg.trim());
+            msg = msg.trim();
+            if (msg.startsWith("LIST")) {
+                msg = msg.substring(4);
+                chat.updateUsersList(msg);
+            }
+            else{
+                chat.addMessage(msg);
+
+            }
             
-            System.out.println(msg.trim());
+            
+            // System.out.println(msg);
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
@@ -101,7 +113,7 @@ public class client {
                 public void run() {
                     try {
                         if (socket.isConnected()) {
-                            enviarMensaje(chat);
+                            enviarMensaje(chat, socket);
                         }
                     } catch (Exception e) {
                         System.out.println("Error: " + e);
