@@ -8,6 +8,8 @@ public class client {
     private ChatGUI chat;
     private Socket socket;
 
+    //Funcion para que el cliente conecte con el servidor
+
     public void conectarServidor(String host, int port) {
         try {
             System.out.println("Connecting to " + host + " on port " + port);
