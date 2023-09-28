@@ -28,7 +28,16 @@ const sendMessage = (fullMesage, origin) => {
 // Función para mostrar la lista de clientes conectados
 const showClients = () => {
     console.log(`Conections: `);
-    console.log(connections.values());
+    // print connections in array format
+    let coms = '';
+    connections.forEach((value, key) => (coms += `${key.remoteAddress}%${value}#`));
+    console.log(`Conections: ${coms}`);
+    // console.log(connections.values);
+
+    // send connections to all clients
+    for (const socket of connections.keys()) {
+        socket.write(`LIST ${coms}`);
+    }
 }
 
 // Función para configurar el servidor para escuchar en un puerto específico
