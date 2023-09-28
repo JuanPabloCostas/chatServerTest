@@ -18,8 +18,9 @@ public class ChatGUI extends JFrame  {
     public JTextArea messages; // Make messages an instance field
     private JPanel input;
     public JTextField tf = new JTextField(10);
-    private JPanel users;
+    public JPanel users;
     private JPanel panel; 
+    public JFrame requestFrame;
 
 
 
@@ -106,38 +107,38 @@ public class ChatGUI extends JFrame  {
         }
     });}
 
-    public void updateUsersList(String msg) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("run started");
+    // public void updateUsersList(String msg) {
+    //     SwingUtilities.invokeLater(new Runnable() {
+    //         @Override
+    //         public void run() {
+    //             System.out.println("run started");
                 
-                users.removeAll();
-                frame.revalidate();
-                users.revalidate();
-                panel.revalidate();
-                frame.revalidate();
-                String[] userList = msg.split("#");
-                System.out.println("array created");
-                for (String user : userList) {
-                    System.out.println(user + " start loop");
-                    JButton userButton = new JButton(user);
-                    // userButton.addActionListener(e -> {
-                    //     messages.append(user + "\n");
-                    // });
+    //             users.removeAll();
+    //             frame.revalidate();
+    //             users.revalidate();
+    //             panel.revalidate();
+    //             frame.revalidate();
+    //             String[] userList = msg.split("#");
+    //             System.out.println("array created");
+    //             for (String user : userList) {
+    //                 System.out.println(user + " start loop");
+    //                 JButton userButton = new JButton(user);
+    //                 userButton.addActionListener(e -> {
+    //                     messages.append(user + "\n");
+    //                 });
 
-                    users.add(userButton);
+    //                 users.add(userButton);
 
                     
-                    System.out.println(user + " added");
-                }
+    //                 System.out.println(user + " added");
+    //             }
 
-                System.out.println("loop done");
-                users.revalidate();
+    //             System.out.println("loop done");
+    //             users.revalidate();
                 
-            }
-        });
-    }
+    //         }
+    //     });
+    // }
 
     // send mesagges back to the client
     

@@ -2,13 +2,15 @@ import java.io.*;
 import java.net.*;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 
 
 public class client {
 
-
+     
     private ChatGUI chat;
     private Socket socket;
+    private OutputStream outputStream;
 
     //Funcion para que el cliente conecte con el servidor
 
@@ -18,7 +20,7 @@ public class client {
             socket = new Socket(host, port);
             System.out.println("Just connected to " + socket.getRemoteSocketAddress());
 
-            OutputStream outputStream = socket.getOutputStream();
+            outputStream = socket.getOutputStream();
 
             System.out.println("Enter username: ");
 
@@ -77,7 +79,7 @@ public class client {
         }
     }
 
-    public void recibirMensaje(ChatGUI chat) {
+    public void recibirMensaje(ChatGUI chat, Socket socket) {
         try {
             InputStream inputStream = socket.getInputStream();
             byte[] buffer = new byte[1024];
@@ -86,11 +88,50 @@ public class client {
             msg = msg.trim();
             if (msg.startsWith("LIST")) {
                 msg = msg.substring(4);
-                chat.updateUsersList(msg);
+                chat.users.removeAll();
+                String[] userList = msg.split("#");
+                for (int i = 0; i < userList.length; i++) {
+                    userList[i] = userList[i].trim();
+                }
+                OutputStream outputStream = socket.getOutputStream();
+                for (String user : userList) {
+                    JButton userButton = new JButton(user);
+                    // button to establish private chat
+                    userButton.addActionListener(e -> {
+                        try {
+                            byte[] msg2 = ("REQUEST#" + user).getBytes();
+                            outputStream.write(msg2);
+                        } catch (Exception ex) {
+                            System.out.println("Error: " + ex);
+                        }
+                    });
+
+                    chat.users.add(userButton);
+                }
+                chat.users.revalidate();
+
+
+                
             }
+            // else if (msg.startsWith("CONREQ")) {
+            //     chat.requestFrame = new JFrame("Request from " + msg.substring(6));
+            //     chat.requestFrame.setSize(300, 100);
+            //     chat.requestFrame.setVisible(true);
+            //     JButton accept = new JButton("Accept");
+            //     JButton decline = new JButton("Decline");
+            //     accept.addActionListener(e -> {
+            //         try {
+            //             byte[] msg2 = ("CONACC#" + msg.substring(6)).getBytes();
+            //             outputStream.write(msg2);
+            //             chat.requestFrame.dispose();
+            //         } catch (Exception ex) {
+            //             System.out.println("Error: " + ex);
+            //         }
+            //     });
+            // }
+            
             else{
                 chat.addMessage(msg);
-
             }
             
             
@@ -129,7 +170,7 @@ public class client {
                 public void run() {
                     try {
                         while (socket.isConnected()) {
-                            recibirMensaje(chat);
+                            recibirMensaje(chat, socket);
                         }
                     } catch (Exception e) {
                         System.out.println("Error: " + e);
