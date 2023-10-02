@@ -365,11 +365,11 @@ public class client {
 
     public static void main(String[] args) {
         // Check args
-        if (args.length != 2) {
-            System.out.println("Usage: java client <host> <port>");
-            System.exit(1);
-        }
-        new client(args[0], Integer.parseInt(args[1]));
+        // if (args.length != 2) {
+        //     System.out.println("Usage: java client <host> <port>");
+        //     System.exit(1);
+        // }
+        new client("localhost", 9000);
 
     }
 }

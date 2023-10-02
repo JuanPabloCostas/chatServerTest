@@ -162,18 +162,18 @@ const listen = (port) => {
 // Función principal que se ejecuta cuando se inicia el programa
 const main = () => {
     // Verificar que se proporcionó el número correcto de argumentos
-    if (process.argv.length !== 3) {
+    if (process.argv.length !== 2) {
         error(`Usage: node ${__filename} port`)
     }
 
     // Obtener el puerto desde los argumentos de la línea de comandos
-    let port = process.argv[2];
-    if (isNaN(port)) {
-        error(`Invalid port ${port}`)
-    }
+    // let port = process.argv[2];
+    // if (isNaN(port)) {
+    //     error(`Invalid port ${port}`)
+    // }
 
     // Convertir el puerto a un número entero
-    port = Number(port)
+    let port = 9000
 
     // Iniciar el servidor en el puerto especificado
     listen(port)
