@@ -58,6 +58,7 @@ public class client {
                     begin();
                 } catch (Exception ex) {
                     System.out.println("Error: " + ex);
+                    System.out.println("1");
                 }
             });
 
@@ -81,6 +82,7 @@ public class client {
 
         } catch (Exception e) {
             System.out.println("Error: " + e);
+            System.out.println("2");
         }
     } // end conectarServidor
 
@@ -101,6 +103,7 @@ public class client {
                     outputStream.write(msg);
                 } catch (Exception ex) {
                     System.out.println("Error: " + ex);
+                    System.out.println("3");
                 }
 
             });
@@ -122,6 +125,7 @@ public class client {
 
         } catch (Exception e) {
             System.out.println("Error: " + e);
+            System.out.println("4");
         }
     }
 
@@ -150,6 +154,7 @@ public class client {
                             outputStream.write(msg2);
                         } catch (Exception ex) {
                             System.out.println("Error: " + ex);
+
                         }
                     });
 
@@ -255,6 +260,10 @@ public class client {
             // System.out.println(msg);
         } catch (Exception e) {
             System.out.println("Error: " + e);
+            // System.out.println("5 error listen");
+            JOptionPane.showMessageDialog(null, "Server disconnected", "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+            
         }
     }
 
@@ -286,6 +295,7 @@ public class client {
                         }
                     } catch (Exception e) {
                         System.out.println("Error: " + e);
+                        System.out.println("Error on socket");
                     }
                 }
             };
@@ -294,6 +304,7 @@ public class client {
 
         } catch (Exception e) {
             System.out.println("Error: " + e);
+            System.out.println("error on socket");
         }
     }
 
@@ -340,6 +351,9 @@ public class client {
         //     recibir.start();
 
         } catch (Exception e) {
+            if (!socket.isConnected()) {
+                System.exit(1);
+            }
             System.out.println("Error: " + e);
         }
 
