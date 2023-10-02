@@ -262,7 +262,11 @@ public class client {
             System.out.println("Error: " + e);
             // System.out.println("5 error listen");
             JOptionPane.showMessageDialog(null, "Server disconnected", "Error", JOptionPane.ERROR_MESSAGE);
+            
             System.exit(1);
+            
+
+
             
         }
     }
