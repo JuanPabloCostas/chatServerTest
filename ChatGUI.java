@@ -69,10 +69,21 @@ public class ChatGUI extends JFrame  {
         users.setBackground(new Color(140, 140, 240));
         frame.add(users);
 
-        // Connected users
+        // Button to close application
+        JButton close = new JButton();
+        close.setBounds(640, 550, 40, 20);
+        close.setText("X");
+        close.setBackground(new Color(140, 140, 240));
+        close.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
         
 
-        // Button for each user connected
+
         
 
 
@@ -91,6 +102,8 @@ public class ChatGUI extends JFrame  {
         input.add(inputLabel);
         input.add(tf);
 
+        input.add(close);
+
         // Adding components to the frame
         frame.getContentPane().add(BorderLayout.NORTH, panel);
         frame.getContentPane().add(BorderLayout.SOUTH, input);
@@ -106,6 +119,8 @@ public class ChatGUI extends JFrame  {
             messages.append(msg + "\n");
         }
     });}
+
+    
     
 
 }

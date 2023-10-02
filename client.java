@@ -54,6 +54,7 @@ public class client {
                     hoster = user;
                     byte[] name = user.getBytes();
                     outputStream.write(name);
+                    
                     username.dispose();
                     begin();
                 } catch (Exception ex) {
@@ -146,19 +147,23 @@ public class client {
                 }
                 OutputStream outputStream = socket.getOutputStream();
                 for (String user : userList) {
-                    JButton userButton = new JButton(user);
-                    // button to establish private chat
-                    userButton.addActionListener(e -> {
-                        try {
-                            byte[] msg2 = ("REQUEST#" + user).getBytes();
-                            outputStream.write(msg2);
-                        } catch (Exception ex) {
-                            System.out.println("Error: " + ex);
+                    String userName = user.split("%")[1];
+                    if (!userName.equals(hoster)) {
+                        JButton userButton = new JButton(userName);
+                        // button to establish private chat
+                        userButton.addActionListener(e -> {
+                            try {
+                                byte[] msg2 = ("REQUEST#" + user).getBytes();
+                                outputStream.write(msg2);
+                            } catch (Exception ex) {
+                                System.out.println("Error: " + ex);
 
-                        }
-                    });
+                            }
+                        });
 
-                    chat.users.add(userButton);
+                        chat.users.add(userButton);
+                    }
+                    
                 }
                 chat.users.revalidate();
                 
