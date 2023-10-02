@@ -24,13 +24,13 @@ public class ChatGUI extends JFrame  {
 
 
 
-    public ChatGUI() {
+    public ChatGUI(String host) {
 
         
         
 
         // Frame
-        frame = new JFrame("Chat Frame");
+        frame = new JFrame("Chat Frame" + " - " + host);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(700, 700);
 
@@ -106,41 +106,6 @@ public class ChatGUI extends JFrame  {
             messages.append(msg + "\n");
         }
     });}
-
-    // public void updateUsersList(String msg) {
-    //     SwingUtilities.invokeLater(new Runnable() {
-    //         @Override
-    //         public void run() {
-    //             System.out.println("run started");
-                
-    //             users.removeAll();
-    //             frame.revalidate();
-    //             users.revalidate();
-    //             panel.revalidate();
-    //             frame.revalidate();
-    //             String[] userList = msg.split("#");
-    //             System.out.println("array created");
-    //             for (String user : userList) {
-    //                 System.out.println(user + " start loop");
-    //                 JButton userButton = new JButton(user);
-    //                 userButton.addActionListener(e -> {
-    //                     messages.append(user + "\n");
-    //                 });
-
-    //                 users.add(userButton);
-
-                    
-    //                 System.out.println(user + " added");
-    //             }
-
-    //             System.out.println("loop done");
-    //             users.revalidate();
-                
-    //         }
-    //     });
-    // }
-
-    // send mesagges back to the client
     
 
 }

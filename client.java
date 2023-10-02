@@ -1,16 +1,18 @@
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.*;
 
 
 public class client {
 
      
     private ChatGUI chat;
+    private serverp2p serverp2p;
     private Socket socket;
     private OutputStream outputStream;
+    public static String hoster;
 
     //Funcion para que el cliente conecte con el servidor
 
@@ -24,11 +26,55 @@ public class client {
 
             System.out.println("Enter username: ");
 
-            BufferedReader username = new BufferedReader(new InputStreamReader(System.in));
-            String x = username.readLine();
-            System.out.println(x);
-            byte[] name = x.getBytes();
-            outputStream.write(name);
+            // Open window for username
+            JFrame username = new JFrame("Username");
+            username.setSize(300, 300);
+            username.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            username.setLayout(null);
+
+            // Label for username
+            JLabel label = new JLabel("Enter username:");
+            label.setBounds(50, 0, 200, 50);
+            username.add(label);
+
+
+            // Text field for username
+            JTextField tf = new JTextField(10);
+            tf.setBounds(50, 50, 200, 50);
+            tf.setBackground(new Color(140, 240, 240));
+            username.add(tf);
+
+            // Button to send username
+            JButton send = new JButton("Send");
+            send.setBounds(50, 100, 100, 50);
+
+            send.addActionListener(e -> {
+                try {
+                    String user = tf.getText();
+                    hoster = user;
+                    byte[] name = user.getBytes();
+                    outputStream.write(name);
+                    username.dispose();
+                    begin();
+                } catch (Exception ex) {
+                    System.out.println("Error: " + ex);
+                }
+            });
+
+            username.add(send);
+
+            
+            username.setVisible(true);
+
+
+
+
+            // BufferedReader username = new BufferedReader(new InputStreamReader(System.in));
+            // String x = username.readLine();
+            // System.out.println(x);
+            // hoster = x;
+            // byte[] name = x.getBytes();
+            // outputStream.write(name);
 
 
 
@@ -89,6 +135,7 @@ public class client {
             if (msg.startsWith("LIST")) {
                 msg = msg.substring(4);
                 chat.users.removeAll();
+                chat.users.setVisible(false);
                 String[] userList = msg.split("#");
                 for (int i = 0; i < userList.length; i++) {
                     userList[i] = userList[i].trim();
@@ -109,26 +156,96 @@ public class client {
                     chat.users.add(userButton);
                 }
                 chat.users.revalidate();
+                
+                chat.users.setVisible(true);
 
 
                 
             }
-            // else if (msg.startsWith("CONREQ")) {
-            //     chat.requestFrame = new JFrame("Request from " + msg.substring(6));
-            //     chat.requestFrame.setSize(300, 100);
-            //     chat.requestFrame.setVisible(true);
-            //     JButton accept = new JButton("Accept");
-            //     JButton decline = new JButton("Decline");
-            //     accept.addActionListener(e -> {
-            //         try {
-            //             byte[] msg2 = ("CONACC#" + msg.substring(6)).getBytes();
-            //             outputStream.write(msg2);
-            //             chat.requestFrame.dispose();
-            //         } catch (Exception ex) {
-            //             System.out.println("Error: " + ex);
-            //         }
-            //     });
-            // }
+            else if (msg.startsWith("CONREQ")) {
+                msg = msg.substring(7);
+                // Get username
+                // example message: eevee wants to connect with you
+                String[] msgSplit = msg.split(" ");
+                String user = msgSplit[0];
+                System.out.println(user);
+
+                // Create new window for accept or reject request
+                JFrame request = new JFrame("Request from " + user);
+                request.setSize(300, 300);
+                request.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                request.setLayout(null);
+                request.setVisible(true);
+
+                // Accept button
+                JButton accept = new JButton("Accept");
+                accept.setBounds(50, 50, 100, 50);
+                accept.addActionListener(e -> {
+                    try {
+
+                        // Create new socekt for private chat
+                        
+                        
+                        serverp2p = new serverp2p(user, null, hoster);
+                        
+                        System.out.println("here");
+                        
+                        
+                        int port = serverp2p.port;
+
+
+
+
+
+                        byte[] msg2 = ("CONACC# " + user + "%" + port + "%" + hoster).getBytes();
+                        outputStream.write(msg2);
+                        request.dispose();
+
+                        
+
+
+                    } catch (Exception ex) {
+                        System.out.println("Error: " + ex);
+                    }
+                });
+                request.add(accept);
+
+                // Reject button
+                JButton reject = new JButton("Reject");
+                reject.setBounds(150, 50, 100, 50);
+                reject.addActionListener(e -> {
+                    try {
+                        byte[] msg2 = ("CONREJ# " + user).getBytes();
+                        outputStream.write(msg2);
+                        request.dispose();
+                    } catch (Exception ex) {
+                        System.out.println("Error: " + ex);
+                    }
+                });
+                request.add(reject);
+
+
+
+            }
+            else if (msg.startsWith("CONACC#")) {
+                msg = msg.substring(8);
+                String[] msgSplit = msg.split("%");
+                String user = msgSplit[2];
+                int port = Integer.parseInt(msgSplit[1]);
+
+                // Create new socket for private chat
+                Socket socket2 = new Socket("localhost", port);
+                serverp2p = new serverp2p(user, socket2, hoster);
+
+            }
+            else if (msg.startsWith("CONREJ")) {
+                msg = msg.substring(7);
+                String[] msgSplit = msg.split("%");
+                String user = msgSplit[0];
+                System.out.println(user);
+                System.out.println("Request rejected");
+                
+            }
             
             else{
                 chat.addMessage(msg);
@@ -141,16 +258,11 @@ public class client {
         }
     }
 
-    public client(String host, int port) {
+    public void begin() {
         try {
-
-            conectarServidor(host, port);
-
             // Start ChatGUI.java
-            chat = new ChatGUI();
+            chat = new ChatGUI(hoster);
             chat.addMessage("This is a test message.");
-
-
 
             Thread enviar = new Thread() {
                 public void run() {
@@ -179,6 +291,53 @@ public class client {
             };
 
             recibir.start();
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+    }
+
+    public client(String host, int port) {
+        try {
+
+            conectarServidor(host, port);
+
+            
+
+
+        //     // Start ChatGUI.java
+        //     chat = new ChatGUI(hoster);
+        //     chat.addMessage("This is a test message.");
+
+
+
+        //     Thread enviar = new Thread() {
+        //         public void run() {
+        //             try {
+        //                 if (socket.isConnected()) {
+        //                     enviarMensaje(chat, socket);
+        //                 }
+        //             } catch (Exception e) {
+        //                 System.out.println("Error: " + e);
+        //             }
+        //         }
+        //     };
+
+        //     enviar.start();
+
+        //     Thread recibir = new Thread() {
+        //         public void run() {
+        //             try {
+        //                 while (socket.isConnected()) {
+        //                     recibirMensaje(chat, socket);
+        //                 }
+        //             } catch (Exception e) {
+        //                 System.out.println("Error: " + e);
+        //             }
+        //         }
+        //     };
+
+        //     recibir.start();
 
         } catch (Exception e) {
             System.out.println("Error: " + e);
