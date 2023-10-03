@@ -17,18 +17,19 @@ public class serverp2p {
 
         try {
             String userHome = System.getProperty("user.home");
-            path = userHome + "/Desktop/ChatFiles/" + host + "/";
-
+            path = userHome + File.separator + "Desktop" + File.separator + "ChatFiles" + File.separator + host + File.separator;
+        
             File storage = new File(path);
             if (!storage.exists()) {
                 storage.mkdirs();
             }
-
+        
             System.out.println("Path: " + path);
-
+        
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
+        
         
         try {
             JFrame privateChat = new JFrame("Private Chat with " + user);
