@@ -164,8 +164,6 @@ public class serverp2p {
 
             privateChat.add(chooseFile);
 
-
-
             while (socket.isConnected()) {
                 InputStream inputStream = socket.getInputStream();
                 byte[] data = new byte[1024];
