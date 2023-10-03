@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
@@ -9,6 +10,7 @@ public class serverp2p {
 
     public int port;
     private String path;
+    public JFrame privateChat;
 
     public void serverp2pThread(Socket socket, String user, String host) {
 
@@ -32,8 +34,35 @@ public class serverp2p {
         
         
         try {
-            JFrame privateChat = new JFrame("Private Chat with " + user);
-            privateChat.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            privateChat = new JFrame("Private Chat with " + user);
+
+
+            privateChat.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+            privateChat.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    try {
+                        OutputStream outputStream = socket.getOutputStream();
+                        byte[] msg = "END".getBytes();
+                        outputStream.write(msg);
+                        socket.close();
+                        privateChat.dispose();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                        // Handle the exception appropriately
+                    }
+
+                    // Dispose the JFrame
+                    privateChat.dispose();
+                }
+            });
+
+
+
+
+
+            
             privateChat.setSize(700, 700);
 
             JPanel panel = new JPanel();
@@ -197,6 +226,9 @@ public class serverp2p {
 
         } catch (Exception e) {
             System.out.println("Error: " + e);
+            privateChat.dispose();
+            JOptionPane.showMessageDialog(null, "Other client disconnected", "Error", JOptionPane.ERROR_MESSAGE);
+            
         }
 
     }

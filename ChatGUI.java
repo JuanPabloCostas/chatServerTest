@@ -1,7 +1,9 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.awt.event.*;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -21,17 +23,38 @@ public class ChatGUI extends JFrame  {
     public JPanel users;
     private JPanel panel; 
     public JFrame requestFrame;
+    public Socket socket;
 
 
 
-    public ChatGUI(String host) {
+    public ChatGUI(String host, Socket socket) {
+        this.socket = socket;
 
         
         
 
         // Frame
         frame = new JFrame("Chat Frame" + " - " + host);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    try {
+                        OutputStream outputStream = socket.getOutputStream();
+                        byte[] msg = "END".getBytes();
+                        outputStream.write(msg);
+                        socket.close();
+                        super.windowClosing(e);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                        // Handle the exception appropriately
+                    }
+                    // Dispose the JFrame
+                    frame.dispose();
+                }
+            });
+        
         frame.setSize(700, 700);
 
         // Panel for messages
@@ -69,6 +92,8 @@ public class ChatGUI extends JFrame  {
         users.setBackground(new Color(140, 140, 240));
         frame.add(users);
 
+        // 323335
+
         // Button to close application
         JButton close = new JButton();
         close.setBounds(640, 550, 40, 20);
@@ -77,7 +102,15 @@ public class ChatGUI extends JFrame  {
         close.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                try {
+                    OutputStream outputStream = socket.getOutputStream();
+                    outputStream.write("END".getBytes());
+                    outputStream.flush();
+                    socket.close();
+                } catch (Exception err) {
+                    System.out.println("Error: " + err.getMessage());
+                }
+                
             }
         });
 

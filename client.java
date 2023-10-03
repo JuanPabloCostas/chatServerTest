@@ -266,7 +266,8 @@ public class client {
         } catch (Exception e) {
             System.out.println("Error: " + e);
             // System.out.println("5 error listen");
-            JOptionPane.showMessageDialog(null, "Server disconnected", "Error", JOptionPane.ERROR_MESSAGE);
+            // JOptionPane.showMessageDialog(null, "Server disconnected", "Error", JOptionPane.ERROR_MESSAGE);
+            
             
             System.exit(1);
             
@@ -279,7 +280,7 @@ public class client {
     public void begin() {
         try {
             // Start ChatGUI.java
-            chat = new ChatGUI(hoster);
+            chat = new ChatGUI(hoster, socket);
             chat.addMessage("This is a test message.");
 
             Thread enviar = new Thread() {
