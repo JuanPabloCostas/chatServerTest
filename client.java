@@ -249,8 +249,8 @@ public class client {
     public void begin() {
         try {
             // Start ChatGUI.java
-            chat = new ChatGUI(hoster);
-            chat.addMessage("GLOBAL CHAT");
+            chat = new ChatGUI(hoster, socket);
+            chat.addMessage("This is a test message.");
 
             Thread enviar = new Thread() {
                 public void run() {

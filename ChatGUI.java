@@ -3,6 +3,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.awt.event.*;
+
+
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -22,20 +28,20 @@ public class ChatGUI extends JFrame  {
     public JPanel users;
     private JPanel panel; 
     public JFrame requestFrame;
+    public Socket socket;
 
 
 
-    public ChatGUI(String host) {
+    public ChatGUI(String host, Socket socket) {
+        this.socket = socket;
 
         
         
 
         // Frame
-        frame = new JFrame("Chat App" + " - " + host);
+        frame = new JFrame("Chat Frame" + " - " + host);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(600, 400);
-        frame.setLocationRelativeTo(null);
-
+        frame.setSize(700, 700);
 
         // Panel for messages
         panel = new JPanel();
@@ -57,8 +63,9 @@ public class ChatGUI extends JFrame  {
 
         // Connected users area
         users = new JPanel();
-        users.setPreferredSize(new Dimension(150, 0));
-        users.setBackground(new Color(32, 33, 35));
+        users.setBounds(640, 20, 40, 500);
+        users.setBackground(new Color(140, 140, 240));
+        frame.add(users);
 
         // Button to close application
         JButton close = new JButton();
@@ -68,7 +75,15 @@ public class ChatGUI extends JFrame  {
         close.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(0);
+                try {
+                    OutputStream outputStream = socket.getOutputStream();
+                    outputStream.write("END".getBytes());
+                    outputStream.flush();
+                    socket.close();
+                } catch (Exception err) {
+                    System.out.println("Error: " + err.getMessage());
+                }
+                
             }
         });
 

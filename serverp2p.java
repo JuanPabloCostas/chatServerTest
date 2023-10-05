@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.event.*;
 import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
@@ -9,6 +10,7 @@ public class serverp2p {
 
     public int port;
     private String path;
+    public JFrame privateChat;
 
     public void serverp2pThread(Socket socket, String user, String host) {
 
@@ -16,23 +18,24 @@ public class serverp2p {
         // create a folder with the name of the user, if not exists
 
         try {
-            path = "/Documents/Sistemas_distribuidos/" + host + "/";
-
+            String userHome = System.getProperty("user.home");
+            path = userHome + File.separator + "Desktop" + File.separator + "ChatFiles" + File.separator + host + File.separator;
+        
             File storage = new File(path);
             if (!storage.exists()) {
                 storage.mkdirs();
             }
-
+        
             System.out.println("Path: " + path);
-
+        
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
-
+        
         try {
             JFrame privateChat = new JFrame("Private Chat with " + user);
             privateChat.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            privateChat.setSize(650, 400);
+            privateChat.setSize(700, 700);
 
             // Crear un panel principal con BorderLayout
             JPanel mainPanel = new JPanel(new BorderLayout());
@@ -111,11 +114,14 @@ public class serverp2p {
 
             input.add(choose);
 
-            // Agregar el panel de entrada en la parte inferior del panel principal
             mainPanel.add(input, BorderLayout.SOUTH);
 
             privateChat.add(mainPanel);
             privateChat.setVisible(true);
+
+            
+
+
 
             while (socket.isConnected()) {
                 InputStream inputStream = socket.getInputStream();
@@ -168,6 +174,9 @@ public class serverp2p {
 
         } catch (Exception e) {
             System.out.println("Error: " + e);
+            privateChat.dispose();
+            JOptionPane.showMessageDialog(null, "Other client disconnected", "Error", JOptionPane.ERROR_MESSAGE);
+            
         }
 
     }
