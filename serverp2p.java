@@ -16,8 +16,7 @@ public class serverp2p {
         // create a folder with the name of the user, if not exists
 
         try {
-            String userHome = System.getProperty("user.home");
-            path = userHome + "/Desktop/ChatFiles/" + host + "/";
+            path = "/Documents/Sistemas_distribuidos/" + host + "/";
 
             File storage = new File(path);
             if (!storage.exists()) {
@@ -29,37 +28,32 @@ public class serverp2p {
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
-        
+
         try {
             JFrame privateChat = new JFrame("Private Chat with " + user);
             privateChat.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            privateChat.setSize(700, 700);
+            privateChat.setSize(650, 400);
 
-            JPanel panel = new JPanel();
-            panel.setBounds(20, 20, 600, 500);
-            panel.setBackground(new Color(140, 240, 240));
+            // Crear un panel principal con BorderLayout
+            JPanel mainPanel = new JPanel(new BorderLayout());
 
             JTextArea messages = new JTextArea();
-            messages.setBounds(20, 20, 600, 500);
-            messages.setBackground(new Color(140, 240, 240));
             messages.setEditable(false);
-            panel.add(messages);
 
-            
-            // Send message
+            // Agregar un JScrollPane al área de mensajes
+            JScrollPane messagesScrollPane = new JScrollPane(messages);
+            mainPanel.add(messagesScrollPane, BorderLayout.CENTER);
+
+            // Crear el panel de entrada
             JPanel input = new JPanel();
-            input.setBounds(20, 550, 600, 50);
-            input.setBackground(new Color(140, 240, 240));
+            input.setBackground(new Color(140, 140, 240));
 
-            JTextField tf = new JTextField(10);
-            tf.setBounds(20, 550, 600, 50);
-            tf.setBackground(new Color(140, 240, 240));
+            JTextField tf = new JTextField(20);
 
             OutputStream outputStream = socket.getOutputStream();
             tf.addActionListener(e -> {
                 String message = tf.getText();
                 if (message.equals("END")) {
-                    
                     try {
                         byte[] msg = "END".getBytes();
                         outputStream.write(msg);
@@ -68,7 +62,6 @@ public class serverp2p {
                     } catch (Exception ex) {
                         System.out.println("Error: " + ex);
                     }
-
                 }
                 messages.append(tf.getText() + "\n");
                 tf.setText("");
@@ -83,24 +76,12 @@ public class serverp2p {
 
             input.add(tf);
 
-            privateChat.add(panel);
-
-            privateChat.add(input);
-
-            privateChat.setLayout(null);
-            privateChat.setVisible(true);
-
-            // choose file
-            JPanel chooseFile = new JPanel();
-            chooseFile.setBounds(20, 600, 600, 50);
-            chooseFile.setBackground(new Color(140, 240, 240));
-
+            // Agregar el botón "Choose file" al panel de entrada
             JButton choose = new JButton("Choose file");
-            choose.setBounds(20, 600, 600, 50);
             choose.setBackground(new Color(140, 240, 240));
 
             choose.addActionListener(e -> {
-                Frame frame = new Frame(); // You can pass your main application frame here
+                Frame frame = new Frame(); // Puedes pasar el marco principal de tu aplicación aquí
 
                 FileDialog fileDialog = new FileDialog(frame, "Select File", FileDialog.LOAD);
                 fileDialog.setVisible(true);
@@ -112,12 +93,12 @@ public class serverp2p {
                     String filePath = directory + file;
                     System.out.println("Selected file: " + filePath);
 
-                    // Send message of incoming file
+                    // Envía un mensaje de archivo entrante
                     try {
                         byte[] msg = ("PUTFILE " + file).getBytes();
                         outputStream.write(msg);
 
-                        // Send file
+                        // Envía el archivo
                         File fileToSend = new File(filePath);
                         byte[] fileBytes = Files.readAllBytes(fileToSend.toPath());
                         outputStream.write(fileBytes);
@@ -125,16 +106,16 @@ public class serverp2p {
                     } catch (Exception ex) {
                         System.out.println("Error: " + ex);
                     }
-
                 }
-                
             });
 
-            chooseFile.add(choose);
+            input.add(choose);
 
-            privateChat.add(chooseFile);
+            // Agregar el panel de entrada en la parte inferior del panel principal
+            mainPanel.add(input, BorderLayout.SOUTH);
 
-
+            privateChat.add(mainPanel);
+            privateChat.setVisible(true);
 
             while (socket.isConnected()) {
                 InputStream inputStream = socket.getInputStream();
@@ -147,10 +128,9 @@ public class serverp2p {
                     socket.close();
                     privateChat.dispose();
                     break;
-                }
-                else if (message.startsWith("PUTFILE")) {
-                    
-                    //get file name
+                } else if (message.startsWith("PUTFILE")) {
+
+                    // get file name
                     String fileName = message.substring(8);
 
                     // check if file exists
@@ -178,21 +158,13 @@ public class serverp2p {
                     bos.close();
                     fos.close();
 
-
                     // System.out.println("File received: " + fileName);
                     messages.append("File received: " + fileName + "\n");
 
-
-
-
-                }
-                else {
+                } else {
                     messages.append(message + "\n");
                 }
             }
-
-
-
 
         } catch (Exception e) {
             System.out.println("Error: " + e);
@@ -200,12 +172,11 @@ public class serverp2p {
 
     }
 
-
     public serverp2p(String user, Socket socketInv, String host) {
 
         System.out.println("serverp2p started");
 
-        if (socketInv!=null) {
+        if (socketInv != null) {
             try {
                 Thread serverp2pThread = new Thread() {
                     public void run() {
@@ -218,13 +189,12 @@ public class serverp2p {
                 };
 
                 serverp2pThread.start();
-                
+
             } catch (Exception e) {
                 System.out.println("Error: " + e);
             }
-            
-        }
-        else{
+
+        } else {
 
             try {
                 ServerSocket serverSocket = new ServerSocket(0);
@@ -232,13 +202,11 @@ public class serverp2p {
                 System.out.println("Puerto: " + port);
                 System.out.println("port printed");
 
-
-
                 Thread whileLoop = new Thread() {
                     public void run() {
                         try {
                             while (true) {
-                                
+
                                 Socket socket = serverSocket.accept();
                                 System.out.println("Conectado");
 
@@ -253,7 +221,7 @@ public class serverp2p {
                                 };
 
                                 serverp2pThread.start();
-                                
+
                             }
                         } catch (Exception e) {
                             System.out.println("Error: " + e);
@@ -265,36 +233,29 @@ public class serverp2p {
                 whileLoop.start();
 
                 // while (true) {
-                //     Socket socket = serverSocket.accept();
-                //     System.out.println("Conectado");
+                // Socket socket = serverSocket.accept();
+                // System.out.println("Conectado");
 
-                //     Thread serverp2pThread = new Thread() {
-                //         public void run() {
-                //             try {
-                //                 serverp2pThread(socket, user);
-                //             } catch (Exception e) {
-                //                 System.out.println("Error: " + e);
-                //             }
-                //         }
-                //     };
-
-                //     serverp2pThread.start();
-                    
+                // Thread serverp2pThread = new Thread() {
+                // public void run() {
+                // try {
+                // serverp2pThread(socket, user);
+                // } catch (Exception e) {
+                // System.out.println("Error: " + e);
                 // }
+                // }
+                // };
 
+                // serverp2pThread.start();
+
+                // }
 
             } catch (Exception e) {
                 System.out.println("Error: " + e);
             }
-    
+
         }
 
-        
-        
-        
     }
 
-    
-
-    
 }

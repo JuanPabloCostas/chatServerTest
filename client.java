@@ -34,19 +34,18 @@ public class client {
 
             // Label for username
             JLabel label = new JLabel("Enter username:");
-            label.setBounds(50, 0, 200, 50);
+            label.setBounds(55, 55, 200, 50);
             username.add(label);
 
 
             // Text field for username
             JTextField tf = new JTextField(10);
-            tf.setBounds(50, 50, 200, 50);
-            tf.setBackground(new Color(140, 240, 240));
-            username.add(tf);
+            tf.setBounds(50, 90, 200, 40);
+            username.add(tf, BorderLayout.CENTER);
 
             // Button to send username
-            JButton send = new JButton("Send");
-            send.setBounds(50, 100, 100, 50);
+            JButton send = new JButton("Accept");
+            send.setBounds(110, 140, 80, 40);
 
             send.addActionListener(e -> {
                 try {
@@ -63,22 +62,10 @@ public class client {
                 }
             });
 
-            username.add(send);
+            username.add(send, BorderLayout.CENTER);
 
             
             username.setVisible(true);
-
-
-
-
-            // BufferedReader username = new BufferedReader(new InputStreamReader(System.in));
-            // String x = username.readLine();
-            // System.out.println(x);
-            // hoster = x;
-            // byte[] name = x.getBytes();
-            // outputStream.write(name);
-
-
 
 
         } catch (Exception e) {
@@ -108,21 +95,6 @@ public class client {
                 }
 
             });
-
-
-            
-            
-            
-            
-            // OutputStream outputStream = socket.getOutputStream();
-            // System.out.println("Enter message: ");
-            // // Get from chatGUI
-            // BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-            // String msg = in.readLine();
-            // byte[] message = msg.getBytes();
-            // outputStream.write(message);
-            
-
 
         } catch (Exception e) {
             System.out.println("Error: " + e);
@@ -182,14 +154,14 @@ public class client {
 
                 // Create new window for accept or reject request
                 JFrame request = new JFrame("Request from " + user);
-                request.setSize(300, 300);
+                request.setSize(300, 230);
                 request.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 request.setLayout(null);
                 request.setVisible(true);
 
                 // Accept button
                 JButton accept = new JButton("Accept");
-                accept.setBounds(50, 50, 100, 50);
+                accept.setBounds(50, 80, 100, 50);
                 accept.addActionListener(e -> {
                     try {
 
@@ -222,7 +194,7 @@ public class client {
 
                 // Reject button
                 JButton reject = new JButton("Reject");
-                reject.setBounds(150, 50, 100, 50);
+                reject.setBounds(150, 80, 100, 50);
                 reject.addActionListener(e -> {
                     try {
                         byte[] msg2 = ("CONREJ# " + user).getBytes();
@@ -262,10 +234,8 @@ public class client {
             }
             
             
-            // System.out.println(msg);
         } catch (Exception e) {
             System.out.println("Error: " + e);
-            // System.out.println("5 error listen");
             JOptionPane.showMessageDialog(null, "Server disconnected", "Error", JOptionPane.ERROR_MESSAGE);
             
             System.exit(1);
@@ -280,7 +250,7 @@ public class client {
         try {
             // Start ChatGUI.java
             chat = new ChatGUI(hoster);
-            chat.addMessage("This is a test message.");
+            chat.addMessage("GLOBAL CHAT");
 
             Thread enviar = new Thread() {
                 public void run() {
@@ -322,42 +292,6 @@ public class client {
 
             conectarServidor(host, port);
 
-            
-
-
-        //     // Start ChatGUI.java
-        //     chat = new ChatGUI(hoster);
-        //     chat.addMessage("This is a test message.");
-
-
-
-        //     Thread enviar = new Thread() {
-        //         public void run() {
-        //             try {
-        //                 if (socket.isConnected()) {
-        //                     enviarMensaje(chat, socket);
-        //                 }
-        //             } catch (Exception e) {
-        //                 System.out.println("Error: " + e);
-        //             }
-        //         }
-        //     };
-
-        //     enviar.start();
-
-        //     Thread recibir = new Thread() {
-        //         public void run() {
-        //             try {
-        //                 while (socket.isConnected()) {
-        //                     recibirMensaje(chat, socket);
-        //                 }
-        //             } catch (Exception e) {
-        //                 System.out.println("Error: " + e);
-        //             }
-        //         }
-        //     };
-
-        //     recibir.start();
 
         } catch (Exception e) {
             if (!socket.isConnected()) {
@@ -369,11 +303,6 @@ public class client {
     }
 
     public static void main(String[] args) {
-        // Check args
-        // if (args.length != 2) {
-        //     System.out.println("Usage: java client <host> <port>");
-        //     System.exit(1);
-        // }
         new client("localhost", 9000);
 
     }

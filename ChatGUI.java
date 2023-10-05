@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -30,49 +31,39 @@ public class ChatGUI extends JFrame  {
         
 
         // Frame
-        frame = new JFrame("Chat Frame" + " - " + host);
+        frame = new JFrame("Chat App" + " - " + host);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(700, 700);
+        frame.setSize(600, 400);
+        frame.setLocationRelativeTo(null);
+
 
         // Panel for messages
         panel = new JPanel();
-        panel.setBounds(20, 20, 600, 500);
-        panel.setBackground(new Color(140, 240, 240));
+        panel.setBounds(20, 20, 500, 100);
         frame.add(panel);
 
         // Mesagges area
         messages = new JTextArea();
-        messages.setBounds(20, 20, 600, 500);
-        messages.setBackground(new Color(140, 240, 240));
+        messages.setBounds(20, 20, 500, 100);
         messages.setEditable(false);
         panel.add(messages);
 
         
 
         // Format for messages
-        JLabel format = new JLabel("Format: <user> <message>");
-        format.setBounds(20, 550, 600, 20);
-        format.setBackground(new Color(0, 140, 140));
+        JLabel format = new JLabel();
+        format.setBounds(20, 550, 600, 100);
         frame.add(format);
-
-
-        // Dummy messages
-        messages.append("Hello\n");
-        messages.append("How are you?\n");
-        messages.append("I'm fine\n");
-        messages.append("Thanks\n");
-        messages.append("Bye\n");
 
         // Connected users area
         users = new JPanel();
-        users.setBounds(640, 20, 40, 500);
-        users.setBackground(new Color(140, 140, 240));
-        frame.add(users);
+        users.setPreferredSize(new Dimension(150, 0));
+        users.setBackground(new Color(32, 33, 35));
 
         // Button to close application
         JButton close = new JButton();
         close.setBounds(640, 550, 40, 20);
-        close.setText("X");
+        close.setText("Disconnect");
         close.setBackground(new Color(140, 140, 240));
         close.addActionListener(new ActionListener() {
             @Override
@@ -92,12 +83,12 @@ public class ChatGUI extends JFrame  {
 
         // Input area
         input = new JPanel();
-        input.setBounds(20, 580, 600, 50);
+        input.setBounds(20, 580, 600, 80);
         input.setBackground(new Color(140, 140, 240));
         frame.add(input);
 
         // Input text
-        JLabel inputLabel = new JLabel("Input: ");
+        JLabel inputLabel = new JLabel("Message: ");
         
         input.add(inputLabel);
         input.add(tf);
@@ -105,7 +96,8 @@ public class ChatGUI extends JFrame  {
         input.add(close);
 
         // Adding components to the frame
-        frame.getContentPane().add(BorderLayout.NORTH, panel);
+        frame.getContentPane().add(BorderLayout.EAST, users);
+        frame.getContentPane().add(BorderLayout.WEST, panel);
         frame.getContentPane().add(BorderLayout.SOUTH, input);
         
         frame.setVisible(true);
